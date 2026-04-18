@@ -1,4 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Ojo de Lince
+
+Sistema de control de acceso para CECYTE BC Villa del Sol.
+
+### Variables de entorno
+
+Crea un archivo `.env.local` con base en `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+Llena al menos:
+
+- `EMAIL_USER`
+- `EMAIL_PASS`
+- `MONGODB_URI`
+- `MONGODB_DB_NAME`
+
+### Probar conexion MongoDB
+
+Con el proyecto corriendo (`npm run dev`), visita:
+
+- [http://localhost:3000/api/db-test](http://localhost:3000/api/db-test)
+
+Si todo esta bien, responde:
+
+```json
+{ "ok": true, "message": "Conexion exitosa con MongoDB" }
+```
 
 ## Getting Started
 

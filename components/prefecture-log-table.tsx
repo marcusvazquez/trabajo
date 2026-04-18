@@ -6,12 +6,12 @@ type PrefectureLogTableProps = {
 
 export function PrefectureLogTable({ records }: PrefectureLogTableProps) {
   return (
-    <section className="rounded-xl border border-[#12367f] bg-white p-5 shadow-xl">
-      <h3 className="mb-4 text-lg font-semibold text-[#0a2a66]">Bitacora de Prefectura</h3>
+    <section className="rounded-xl border border-[#203f87] bg-[#061741]/95 p-5 shadow-xl">
+      <h3 className="mb-4 text-lg font-semibold text-[#d8b24b]">Bitacora de Prefectura</h3>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[540px] border-collapse text-sm">
           <thead>
-            <tr className="bg-slate-100 text-left text-slate-700">
+            <tr className="bg-[#0b245d] text-left text-slate-200">
               <th className="px-3 py-2">Hora</th>
               <th className="px-3 py-2">Matricula</th>
               <th className="px-3 py-2">Alumno</th>
@@ -27,7 +27,7 @@ export function PrefectureLogTable({ records }: PrefectureLogTableProps) {
               </tr>
             ) : (
               records.map((record) => (
-                <tr key={`${record.enrollment}-${record.scannedAt}`} className="border-t border-slate-200">
+                <tr key={`${record.enrollment}-${record.scannedAt}`} className="border-t border-[#1d3578] text-slate-200">
                   <td className="px-3 py-2">{record.scannedAt}</td>
                   <td className="px-3 py-2">{record.enrollment}</td>
                   <td className="px-3 py-2">{record.studentName}</td>

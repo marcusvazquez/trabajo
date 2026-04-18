@@ -78,20 +78,20 @@ export function PrefectureDashboard({ onLogout }: DashboardProps) {
   };
 
   return (
-    <section className="space-y-5">
-      <header className="flex flex-wrap items-center justify-between rounded-xl bg-[#0a2a66] p-5 text-white">
+    <section className="space-y-5 text-slate-100">
+      <header className="flex flex-wrap items-center justify-between rounded-2xl border border-[#203f87] bg-[#061741]/95 p-5 text-white">
         <div>
           <h2 className="text-2xl font-bold">Panel de Prefectura</h2>
           <p className="text-sm text-slate-200">Control de acceso inteligente en tiempo real.</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="rounded-lg bg-[#12367f] px-3 py-2 text-sm">
+          <div className="rounded-lg border border-[#2b4693] bg-[#0b245d] px-3 py-2 text-sm">
             Escaneos: <strong>{records.length}</strong> | Denegados: <strong>{totalDenied}</strong>
           </div>
           <button
             type="button"
             onClick={onLogout}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold"
+            className="rounded-lg border border-[#d8b24b] px-4 py-2 text-sm font-semibold text-[#d8b24b]"
           >
             Cerrar sesion
           </button>
@@ -101,14 +101,14 @@ export function PrefectureDashboard({ onLogout }: DashboardProps) {
       <div className="grid gap-5 lg:grid-cols-2">
         <ScannerPanel onEnrollmentDetected={handleScan} />
 
-        <section className="rounded-xl border border-[#12367f] bg-white p-5 shadow-xl">
-          <div className="mb-3 flex items-center gap-2 text-[#0a2a66]">
+        <section className="rounded-xl border border-[#203f87] bg-[#061741]/95 p-5 shadow-xl">
+          <div className="mb-3 flex items-center gap-2 text-[#d8b24b]">
             <UserSquare2 className="h-5 w-5" />
             <h3 className="text-lg font-semibold">Resultado de Validacion</h3>
           </div>
 
           {!scanState.result ? (
-            <p className="text-sm text-slate-500">Esperando escaneo de credencial...</p>
+            <p className="text-sm text-slate-300">Esperando escaneo de credencial...</p>
           ) : (
             <div className="space-y-4">
               {scanState.student ? (
@@ -121,9 +121,9 @@ export function PrefectureDashboard({ onLogout }: DashboardProps) {
                     className="rounded-lg border border-slate-300 object-cover"
                   />
                   <div className="text-sm">
-                    <p className="font-bold text-slate-900">{scanState.student.fullName}</p>
-                    <p className="text-slate-600">Matricula: {scanState.student.enrollment}</p>
-                    <p className="text-slate-600">Grupo: {scanState.student.gradeGroup}</p>
+                    <p className="font-bold text-slate-100">{scanState.student.fullName}</p>
+                    <p className="text-slate-300">Matricula: {scanState.student.enrollment}</p>
+                    <p className="text-slate-300">Grupo: {scanState.student.gradeGroup}</p>
                   </div>
                 </div>
               ) : null}
@@ -131,7 +131,7 @@ export function PrefectureDashboard({ onLogout }: DashboardProps) {
               <div
                 className={`rounded-lg p-3 text-sm font-semibold ${
                   scanState.result === "AUTORIZADO"
-                    ? "bg-emerald-100 text-emerald-700"
+                    ? "bg-emerald-900/60 text-emerald-200"
                     : "bg-[#5f1f28] text-white"
                 }`}
               >

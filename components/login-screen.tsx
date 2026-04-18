@@ -8,32 +8,31 @@ type LoginScreenProps = {
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
   return (
-    <section className="mx-auto mt-10 w-full max-w-md rounded-2xl border border-[#12367f] bg-[#0a2a66] p-8 text-white shadow-2xl">
+    <section className="mx-auto mt-8 w-full max-w-xl rounded-3xl border border-[#203f87] bg-[#061741]/95 p-8 text-white shadow-[0_0_40px_rgba(2,12,54,0.7)] backdrop-blur">
       <div className="mb-8 text-center">
-        <ShieldCheck className="mx-auto mb-3 h-10 w-10 text-[#f3c64f]" />
-        <h1 className="text-3xl font-bold">Ojo de Lince</h1>
-        <p className="mt-2 text-sm text-slate-200">
-          Sistema de control de acceso - CECYTE BC Villa del Sol
-        </p>
+        <ShieldCheck className="mx-auto mb-3 h-10 w-10 text-[#d8b24b]" />
+        <h1 className="text-5xl font-semibold tracking-[0.35em] text-[#d8b24b]">LINCE</h1>
+        <p className="mt-2 text-xs tracking-[0.25em] text-slate-300">SISTEMA DE CONTROL DE ACCESO · CECYTE</p>
       </div>
 
       <div className="space-y-4">
-        <label className="block text-sm font-medium">Usuario Prefectura</label>
+        <h2 className="py-2 text-center text-2xl tracking-[0.15em] text-[#d8b24b]">INICIAR SESION</h2>
+        <label className="block text-xs font-medium tracking-[0.2em] text-slate-300">CORREO INSTITUCIONAL</label>
         <input
           type="text"
-          defaultValue="prefectura.cecyte"
-          className="w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 outline-none ring-[#f3c64f] focus:ring-2"
+          defaultValue="prefectura@cecyte.edu.mx"
+          className="w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none ring-[#d8b24b] placeholder:text-slate-500 focus:ring-2"
         />
-        <label className="block text-sm font-medium">Contrasena</label>
+        <label className="block text-xs font-medium tracking-[0.2em] text-slate-300">CONTRASENA</label>
         <input
           type="password"
           defaultValue="******"
-          className="w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 outline-none ring-[#f3c64f] focus:ring-2"
+          className="w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none ring-[#d8b24b] focus:ring-2"
         />
         <button
           type="button"
           onClick={onLogin}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#f3c64f] px-4 py-3 font-bold text-[#0a2a66] transition hover:bg-[#ffd972]"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#d8b24b] px-4 py-3 text-lg font-semibold tracking-[0.2em] text-[#0a1a49] transition hover:bg-[#f0ca61]"
         >
           <Lock className="h-5 w-5" />
           ENTRAR
