@@ -31,4 +31,14 @@ export const STUDENTS: Student[] = [
     allowedExitTimes: ["19:00"],
     absences: 8,
   },
+  {
+    id: "st-04",
+    enrollment: "244020800510167",
+    fullName: "Alumno de prueba",
+    gradeGroup: "Prueba",
+    photoUrl: "https://ui-avatars.com/api/?name=Prueba+Lince&background=0A2A66&color=fff&size=256",
+    guardianEmail: "tutor.prueba@example.com",
+    allowedExitTimes: ["14:00", "19:00"],
+    absences: 0,
+  },
 ];
