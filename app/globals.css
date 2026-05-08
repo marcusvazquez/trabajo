@@ -27,3 +27,152 @@ body {
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
 }
+
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.0);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(244, 63, 94, 0.15);
+  }
+}
+
+@keyframes scanLineSweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.anim-fade-in {
+  animation: fadeIn 320ms ease-out both;
+}
+
+.anim-slide-up {
+  animation: slideUpIn 360ms ease-out both;
+}
+
+.anim-scale-in {
+  animation: scaleIn 220ms ease-out both;
+}
+
+.anim-pulse-alert {
+  animation: pulseGlow 1.6s ease-in-out infinite;
+}
+
+.anim-delay-100 {
+  animation-delay: 100ms;
+}
+.anim-delay-200 {
+  animation-delay: 200ms;
+}
+.anim-delay-300 {
+  animation-delay: 300ms;
+}
+
+.anim-press {
+  transition: transform 120ms ease-out, box-shadow 200ms ease-out, background-color 180ms ease-out,
+    border-color 180ms ease-out, color 180ms ease-out;
+}
+
+.anim-press:active {
+  transform: scale(0.97);
+}
+
+.anim-lift {
+  transition: transform 220ms ease-out, box-shadow 220ms ease-out;
+}
+
+.anim-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.anim-theme-shift {
+  transition: background-color 320ms ease, border-color 320ms ease, color 320ms ease,
+    box-shadow 320ms ease;
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.anim-badge-pop {
+  animation: badgePop 260ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-in,
+  .anim-slide-up,
+  .anim-scale-in,
+  .anim-pulse-alert,
+  .anim-badge-pop {
+    animation: none !important;
+  }
+  .anim-press,
+  .anim-lift,
+  .anim-theme-shift {
+    transition: none !important;
+  }
+}

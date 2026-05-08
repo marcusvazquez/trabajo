@@ -80,7 +80,7 @@ export function dashboardSkin(theme: AppVisualTheme): DashboardSkin {
       return {
         sectionMuted: "text-slate-200",
         header:
-          "rounded-2xl border border-sky-500/35 bg-[#041c2e]/95 p-5 text-slate-50 shadow-[0_0_28px_rgba(14,165,233,0.14)]",
+          "relative z-30 overflow-visible rounded-2xl border border-sky-500/35 bg-[#041c2e]/95 p-5 text-slate-50 shadow-[0_0_28px_rgba(14,165,233,0.14)]",
         statBox: "rounded-lg border border-sky-500/30 bg-sky-950/45 px-3 py-2 text-sm text-sky-100",
         card: "rounded-xl border border-sky-500/28 bg-[#041828]/95 p-5 shadow-xl shadow-sky-950/30",
         cardAccent: "text-sky-300",
@@ -93,7 +93,7 @@ export function dashboardSkin(theme: AppVisualTheme): DashboardSkin {
       return {
         sectionMuted: "text-amber-50/95",
         header:
-          "rounded-2xl border border-[#8b2844]/62 bg-[#1f0a0e]/95 p-5 text-amber-50 shadow-[0_0_36px_rgba(245,200,58,0.11)]",
+          "relative z-30 overflow-visible rounded-2xl border border-[#8b2844]/62 bg-[#1f0a0e]/95 p-5 text-amber-50 shadow-[0_0_36px_rgba(245,200,58,0.11)]",
         statBox:
           "rounded-lg border border-[#7a1f36]/72 bg-[#16060a]/92 px-3 py-2 text-sm text-amber-100",
         card: "rounded-xl border border-[#6b1c2e]/62 bg-[#18060c]/95 p-5 shadow-xl shadow-black/40",
@@ -107,7 +107,8 @@ export function dashboardSkin(theme: AppVisualTheme): DashboardSkin {
     default:
       return {
         sectionMuted: "text-slate-100",
-        header: "rounded-2xl border border-[#203f87] bg-[#061741]/95 p-5 text-white",
+        header:
+          "relative z-30 overflow-visible rounded-2xl border border-[#203f87] bg-[#061741]/95 p-5 text-white",
         statBox: "rounded-lg border border-[#2b4693] bg-[#0b245d] px-3 py-2 text-sm",
         card: "rounded-xl border border-[#203f87] bg-[#061741]/95 p-5 shadow-xl",
         cardAccent: "text-[#d8b24b]",

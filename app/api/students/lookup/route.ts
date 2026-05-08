@@ -17,6 +17,28 @@ type LookupPayload = {
   qrPayload?: string;
 };
 
+function qrVariants(qrPayload: string): string[] {
+  const normalized = qrPayload.trim();
+  if (!normalized) return [];
+
+  const variants = new Set<string>();
+  variants.add(normalized);
+
+  const noTrailingSlash = normalized.replace(/\/+$/, "");
+  variants.add(noTrailingSlash);
+
+  variants.add(noTrailingSlash.replace(/^http:\/\//i, "https://"));
+  variants.add(noTrailingSlash.replace(/^https?:\/\/www\./i, "https://"));
+  variants.add(noTrailingSlash.replace(/^https?:\/\//i, "https://www."));
+
+  return [...variants].filter(Boolean);
+}
+
+function extractCredentialIdFromQr(qrPayload: string): string | null {
+  const match = qrPayload.match(/\/credential\/(\d+)\//i);
+  return match?.[1] ?? null;
+}
+
 function mapStudentRowToStudent(row: StudentRow): Student {
   const fullName = `${row.nombre} ${row.apellidos}`.trim();
   return {
@@ -48,13 +70,31 @@ export async function POST(request: Request) {
     let row: StudentRow | null = null;
 
     if (qrPayload) {
-      const byQr = await supabase
-        .from("students")
-        .select("id, matricula, nombre, apellidos, grupo, carrera, qr_payload")
-        .eq("qr_payload", qrPayload)
-        .maybeSingle();
-      if (byQr.error) throw new Error(byQr.error.message);
-      row = (byQr.data as StudentRow | null) ?? null;
+      const variants = qrVariants(qrPayload);
+      for (const variant of variants) {
+        const byQr = await supabase
+          .from("students")
+          .select("id, matricula, nombre, apellidos, grupo, carrera, qr_payload")
+          .eq("qr_payload", variant)
+          .maybeSingle();
+        if (byQr.error) throw new Error(byQr.error.message);
+        row = (byQr.data as StudentRow | null) ?? null;
+        if (row) break;
+      }
+    }
+
+    if (!row && qrPayload) {
+      const credentialId = extractCredentialIdFromQr(qrPayload);
+      if (credentialId) {
+        const byCredentialId = await supabase
+          .from("students")
+          .select("id, matricula, nombre, apellidos, grupo, carrera, qr_payload")
+          .ilike("qr_payload", `%/credential/${credentialId}/%`)
+          .limit(1)
+          .maybeSingle();
+        if (byCredentialId.error) throw new Error(byCredentialId.error.message);
+        row = (byCredentialId.data as StudentRow | null) ?? null;
+      }
     }
 
     if (!row && enrollment) {

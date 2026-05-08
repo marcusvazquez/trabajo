@@ -33,8 +33,10 @@ export type GroupExitWindow = {
 };
 
 export type AccessRecord = {
+  id: string;
   scannedAt: string;
   enrollment: string;
+  group: string;
   studentName: string;
   result: ValidationResult;
   reason: string;

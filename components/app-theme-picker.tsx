@@ -44,7 +44,7 @@ export function AppThemePicker({
   }, [open]);
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className={`relative ${open ? "z-[120]" : "z-20"}`}>
       <button
         type="button"
         aria-expanded={open}
@@ -66,7 +66,7 @@ export function AppThemePicker({
           id={listId}
           role="listbox"
           aria-label="Aspecto visual"
-          className={`absolute top-[calc(100%+0.35rem)] z-50 min-w-[11.5rem] rounded-2xl border p-1 shadow-lg ${
+          className={`absolute top-[calc(100%+0.35rem)] z-[130] min-w-[11.5rem] rounded-2xl border p-1 shadow-lg ${
             menuAlign === "right" ? "right-0" : "left-0"
           } ${menuShellClassName ?? "border-white/15 bg-[#0a1020]/98 backdrop-blur-sm"}`}
         >

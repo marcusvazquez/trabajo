@@ -20,7 +20,9 @@ export function PrefectureRepeatedExitAlertPanel({
   const skin = prefectureExitAlertPanelSkin(visualTheme);
 
   return (
-    <section className={skin.section}>
+    <section
+      className={`${skin.section} anim-slide-up ${alerts.length > 0 ? "anim-pulse-alert" : ""}`}
+    >
       <div className="mb-4 flex flex-wrap items-start gap-3">
         <BellRing className={`h-7 w-7 shrink-0 ${skin.pulse}`} />
         <div className="min-w-0 flex-1">
@@ -28,9 +30,9 @@ export function PrefectureRepeatedExitAlertPanel({
             Avisos a prefectura · intentos repetidos de salida
           </h3>
           <p className={`text-sm ${skin.sub}`}>
-            Tras {EXIT_DENIAL_ALERT_THRESHOLD} denegaciones consecutivas con la misma credencial o QR se
-            genera un aviso y se registra en el servidor. Si configuras WhatsApp Cloud API en el servidor
-            (variables de entorno), el mismo aviso puede enviarse al celular de prefectura.
+            Tras {EXIT_DENIAL_ALERT_THRESHOLD} denegaciones consecutivas del mismo alumno (misma
+            matrícula) se genera un aviso y se registra en el servidor. El aviso puede enviarse por
+            WhatsApp al celular de prefectura.
           </p>
         </div>
       </div>
@@ -40,7 +42,7 @@ export function PrefectureRepeatedExitAlertPanel({
       ) : (
         <ul className="space-y-3">
           {alerts.map((alert) => (
-            <li key={alert.id} className={skin.card}>
+            <li key={alert.id} className={`${skin.card} anim-slide-up`}>
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-semibold text-white">{alert.studentName}</p>

@@ -80,7 +80,7 @@ export function ScannerPanel({ onEnrollmentDetected, visualTheme = "classic" }: 
   }, []);
 
   return (
-    <section className={skin.section}>
+    <section className={`${skin.section} anim-fade-in`}>
       <header className="mb-4 flex items-center gap-2">
         <ScanLine className={`h-5 w-5 ${skin.icon}`} />
         <h2 className="text-lg font-semibold">Modulo de Escaneo</h2>
@@ -95,6 +95,13 @@ export function ScannerPanel({ onEnrollmentDetected, visualTheme = "classic" }: 
         }}
       >
         <div id={readerId} className="relative h-full w-full min-h-[260px]" />
+        {isScanning ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-4 top-0 h-1 rounded-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
+            style={{ animation: "scanLineSweep 1.6s ease-in-out infinite" }}
+          />
+        ) : null}
       </div>
 
       <p className="mt-3 text-center text-[0.7rem] leading-relaxed text-slate-400">
@@ -109,7 +116,7 @@ export function ScannerPanel({ onEnrollmentDetected, visualTheme = "classic" }: 
           type="button"
           onClick={startScanner}
           disabled={isScanning}
-          className={`flex items-center gap-2 ${skin.primaryBtn}`}
+          className={`anim-press anim-lift flex items-center gap-2 ${skin.primaryBtn}`}
         >
           <Camera className="h-4 w-4" />
           Iniciar camara
@@ -118,7 +125,7 @@ export function ScannerPanel({ onEnrollmentDetected, visualTheme = "classic" }: 
           type="button"
           onClick={() => stopScanner().catch(() => undefined)}
           disabled={!isScanning}
-          className={`flex items-center gap-2 ${skin.secondaryBtn}`}
+          className={`anim-press flex items-center gap-2 ${skin.secondaryBtn}`}
         >
           <CameraOff className="h-4 w-4" />
           Detener

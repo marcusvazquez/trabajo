@@ -25,7 +25,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
 
   return (
     <section
-      className={`relative mx-auto mt-8 w-full max-w-xl rounded-3xl p-8 text-white backdrop-blur ${skin.section}`}
+      className={`anim-scale-in relative mx-auto mt-8 w-full max-w-xl rounded-3xl p-8 text-white backdrop-blur ${skin.section}`}
     >
       <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
         <AppThemePicker
@@ -37,7 +37,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
         />
       </div>
 
-      <div className="mb-8 text-center">
+      <div className="anim-fade-in anim-delay-100 mb-8 text-center">
         <ShieldCheck className={`mx-auto mb-3 h-10 w-10 ${skin.title}`} />
         <h1 className={`text-5xl font-semibold tracking-[0.35em] ${skin.title}`}>LINCE</h1>
         <p className="mt-2 text-xs tracking-[0.25em] text-slate-300">
@@ -45,7 +45,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={handleEnter}>
+      <form className="anim-slide-up anim-delay-200 space-y-4" onSubmit={handleEnter}>
         <h2 className={`py-2 text-center text-2xl tracking-[0.15em] ${skin.title}`}>
           INICIAR SESION
         </h2>
@@ -72,7 +72,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
         />
         <button
           type="submit"
-          className={`mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-lg font-semibold tracking-[0.2em] transition ${skin.submit}`}
+          className={`anim-press anim-lift mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-lg font-semibold tracking-[0.2em] transition ${skin.submit}`}
         >
           <Lock className="h-5 w-5" />
           ENTRAR

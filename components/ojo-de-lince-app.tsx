@@ -12,7 +12,7 @@ export function OjoDeLinceApp() {
 
   return (
     <div
-      className={`min-h-[100dvh] w-full ${appPageBackground(visualTheme)} transition-colors duration-300`}
+      className={`anim-theme-shift min-h-[100dvh] w-full ${appPageBackground(visualTheme)}`}
     >
       <main className="mx-auto w-full max-w-6xl px-4 py-8">
         {isAuthenticated ? (
