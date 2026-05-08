@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendExitAttemptWhatsApp } from "@/lib/send-prefecture-whatsapp";
+import { sendWhatsAppNotification } from "@/lib/whatsapp";
 
 export type PrefectureExitAlertBody = {
   enrollment: string;
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       .filter(Boolean)
       .join("\n");
 
-    const wa = await sendExitAttemptWhatsApp(whatsappBody);
+    const wa = await sendWhatsAppNotification(whatsappBody);
 
     return NextResponse.json({
       ok: true,

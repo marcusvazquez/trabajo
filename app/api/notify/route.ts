@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { formatExitAttemptWhatsAppMessage } from "@/lib/format-exit-whatsapp-message";
 import { hasMailerConfig, sendGuardianNotification } from "@/lib/mailer";
 import type { NotificationPayload } from "@/lib/types";
-import { sendWhatsAppNotification } from "@/lib/whatsapp";
 
 export async function POST(request: Request) {
   try {
@@ -11,9 +9,6 @@ export async function POST(request: Request) {
     if (!payload?.student || !payload.student.enrollment || !payload.result || !payload.scannedAt) {
       return NextResponse.json({ error: "Payload invalido." }, { status: 400 });
     }
-
-    const whatsappBody = formatExitAttemptWhatsAppMessage(payload);
-    const wa = await sendWhatsAppNotification(whatsappBody);
 
     let email: "skipped" | "sent" | "error" = "skipped";
     if (hasMailerConfig() && payload.student.guardianEmail) {
@@ -29,9 +24,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      whatsapp: wa.outcome,
-      whatsappDetalle: wa.detalleEs,
-      whatsappApiError: wa.apiErrorSnippet,
+      whatsapp: "skipped",
+      whatsappDetalle:
+        "WhatsApp solo se dispara cuando el mismo alumno acumula 3 intentos denegados.",
       email,
     });
   } catch (error) {

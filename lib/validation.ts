@@ -17,6 +17,16 @@ export function getCurrentHourLabel(date: Date): string {
   });
 }
 
+const WEEKDAY_LABELS = [
+  "Domingo",
+  "Lunes",
+  "Martes",
+  "Miercoles",
+  "Jueves",
+  "Viernes",
+  "Sabado",
+];
+
 export function validateExit(
   student: Student,
   now: Date,
@@ -26,6 +36,7 @@ export function validateExit(
   reason: string;
 } {
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const currentDow = now.getDay();
 
   const demoCodes = ["4DPGM", "4CPGM"] as const;
   for (const code of demoCodes) {
@@ -34,6 +45,24 @@ export function validateExit(
       return {
         result: "AUTORIZADO",
         reason: `Salida autorizada: ventana de grupo ${code} activa.`,
+      };
+    }
+
+    const matchingWindow = groupWindows.find(
+      (w) => w.enabled && w.groupCode === code && w.dayOfWeek === currentDow
+    );
+    if (matchingWindow) {
+      return {
+        result: "DENEGADO",
+        reason: `Fuera de horario para ${code}. Ventana hoy: ${matchingWindow.startTime}-${matchingWindow.endTime}.`,
+      };
+    }
+
+    const otherWindow = groupWindows.find((w) => w.enabled && w.groupCode === code);
+    if (otherWindow) {
+      return {
+        result: "DENEGADO",
+        reason: `Hoy (${WEEKDAY_LABELS[currentDow]}) no esta autorizado para ${code}.`,
       };
     }
   }

@@ -6,7 +6,6 @@ import { CheckCircle2, ShieldAlert, UserSquare2 } from "lucide-react";
 import { AppThemePicker } from "@/components/app-theme-picker";
 import { ScannerPanel } from "@/components/scanner-panel";
 import { PrefectureLogTable } from "@/components/prefecture-log-table";
-import { DesertionAlerts } from "@/components/desertion-alerts";
 import { GroupExitAuthorizationPanel } from "@/components/group-exit-authorization-panel";
 import { PrefectureRepeatedExitAlertPanel } from "@/components/prefecture-repeated-exit-alert-panel";
 import { accessResultLabel } from "@/lib/access-result-labels";
@@ -506,17 +505,42 @@ export function PrefectureDashboard({
       {historyOpen ? (
         <section className="anim-fade-in fixed inset-0 z-50 bg-slate-950/70 p-4 backdrop-blur-sm">
           <div className="anim-scale-in mx-auto max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-xl border border-slate-600/50 bg-slate-900 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-700 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 px-4 py-3">
               <h3 className="text-sm font-semibold text-slate-100">
                 Historial de salidas ({historyRecords.length})
               </h3>
-              <button
-                type="button"
-                onClick={() => setHistoryOpen(false)}
-                className="rounded-md border border-slate-600 px-2 py-1 text-xs text-slate-200 hover:border-slate-400"
-              >
-                Cerrar
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      historyRecords.length > 0 &&
+                      typeof window !== "undefined" &&
+                      window.confirm(
+                        "¿Borrar todo el historial? Esta acción no se puede deshacer."
+                      )
+                    ) {
+                      setHistoryRecords([]);
+                      try {
+                        localStorage.removeItem(HISTORY_STORAGE_KEY);
+                      } catch {
+                        // ignorar
+                      }
+                    }
+                  }}
+                  disabled={historyRecords.length === 0}
+                  className="anim-press rounded-md border border-rose-400/60 px-2 py-1 text-xs font-semibold text-rose-100 hover:bg-rose-500/15 disabled:opacity-40"
+                >
+                  Borrar historial
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHistoryOpen(false)}
+                  className="anim-press rounded-md border border-slate-600 px-2 py-1 text-xs text-slate-200 hover:border-slate-400"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
             <div className="max-h-[80vh] overflow-auto p-4">
               <PrefectureLogTable records={historyRecords} visualTheme={visualTheme} />
@@ -524,7 +548,6 @@ export function PrefectureDashboard({
           </div>
         </section>
       ) : null}
-      <DesertionAlerts students={STUDENTS} threshold={6} visualTheme={visualTheme} />
     </section>
   );
 }
