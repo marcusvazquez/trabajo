@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { BellRing, X } from "lucide-react";
 import { prefectureExitAlertPanelSkin } from "@/lib/app-visual-theme";
 import type { AppVisualTheme } from "@/lib/app-visual-theme";
@@ -19,9 +20,19 @@ export function PrefectureRepeatedExitAlertPanel({
 }: PrefectureRepeatedExitAlertPanelProps) {
   const skin = prefectureExitAlertPanelSkin(visualTheme);
 
+  const pulseGlowVar: CSSProperties = {
+    "--pulse-glow-color":
+      visualTheme === "security"
+        ? "rgba(56, 189, 248, 0.2)"
+        : visualTheme === "lince"
+          ? "rgba(245, 200, 58, 0.18)"
+          : "rgba(244, 63, 94, 0.15)",
+  };
+
   return (
     <section
       className={`${skin.section} anim-slide-up ${alerts.length > 0 ? "anim-pulse-alert" : ""}`}
+      style={pulseGlowVar}
     >
       <div className="mb-4 flex flex-wrap items-start gap-3">
         <BellRing className={`h-7 w-7 shrink-0 ${skin.pulse}`} />

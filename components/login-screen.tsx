@@ -1,5 +1,6 @@
 "use client";
 
+import type { FormEvent } from "react";
 import { Lock, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { AppThemePicker } from "@/components/app-theme-picker";
@@ -20,23 +21,46 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
   const [email, setEmail] = useState(`prefectura${INSTITUTIONAL_SUFFIX}`);
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const skin = loginSkin(visualTheme);
 
-  const handleEnter = (event?: React.FormEvent) => {
+  const handleEnter = async (event?: FormEvent) => {
     event?.preventDefault();
     const trimmedEmail = email.trim();
     if (!VALID_EMAIL_REGEX.test(trimmedEmail)) {
       setErrorMessage(
-        `Usa un correo institucional valido (ej. usuario${INSTITUTIONAL_SUFFIX}).`
+        `Usa un correo institucional válido (ej. usuario${INSTITUTIONAL_SUFFIX}).`
       );
       return;
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
-      setErrorMessage(`La contrasena debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`);
+      setErrorMessage(
+        `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`
+      );
       return;
     }
+    setIsLoading(true);
     setErrorMessage(null);
-    onLogin();
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmedEmail, password }),
+      });
+      if (response.ok) {
+        onLogin();
+      } else {
+        const payload = await response.json().catch(() => ({}));
+        setErrorMessage(
+          (payload as { message?: string }).message ??
+            "Credenciales incorrectas. Intenta de nuevo."
+        );
+      }
+    } catch {
+      setErrorMessage("Error de conexión. Verifica tu red e intenta de nuevo.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,7 +103,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
           className={`w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:ring-2 ${skin.ring}`}
         />
 
-        <label className="block text-xs font-medium tracking-[0.2em] text-slate-300">CONTRASENA</label>
+        <label className="block text-xs font-medium tracking-[0.2em] text-slate-300">CONTRASEÑA</label>
         <input
           type="password"
           autoComplete="current-password"
@@ -87,7 +111,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
           onChange={(e) => {
             setPassword(e.target.value);
           }}
-          placeholder="Minimo 4 caracteres"
+          placeholder="Mínimo 4 caracteres"
           className={`w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none focus:ring-2 ${skin.ring}`}
         />
 
@@ -99,10 +123,13 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
 
         <button
           type="submit"
-          className={`anim-press anim-lift mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-lg font-semibold tracking-[0.2em] transition ${skin.submit}`}
+          disabled={isLoading}
+          className={`anim-press anim-lift mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-lg font-semibold tracking-[0.2em] transition ${skin.submit} ${
+            isLoading ? "cursor-not-allowed opacity-60" : ""
+          }`}
         >
           <Lock className="h-5 w-5" />
-          ENTRAR
+          {isLoading ? "VERIFICANDO..." : "ENTRAR"}
         </button>
       </form>
 

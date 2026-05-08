@@ -73,23 +73,26 @@ body {
 @keyframes pulseGlow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.0);
+    box-shadow: 0 0 0 0 var(--pulse-glow-color, rgba(244, 63, 94, 0));
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(244, 63, 94, 0.15);
+    box-shadow: 0 0 0 6px var(--pulse-glow-color, rgba(244, 63, 94, 0.15));
   }
 }
 
 @keyframes scanLineSweep {
   0% {
-    transform: translateY(-100%);
+    top: 0%;
     opacity: 0;
   }
-  20% {
-    opacity: 0.85;
+  8% {
+    opacity: 0.9;
+  }
+  92% {
+    opacity: 0.9;
   }
   100% {
-    transform: translateY(100%);
+    top: 100%;
     opacity: 0;
   }
 }
@@ -136,6 +139,10 @@ body {
 .anim-lift:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.anim-press.anim-lift:active {
+  transition-duration: 80ms;
 }
 
 .anim-theme-shift {

@@ -98,8 +98,11 @@ export function ScannerPanel({ onEnrollmentDetected, visualTheme = "classic" }: 
         {isScanning ? (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-4 top-0 h-1 rounded-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
-            style={{ animation: "scanLineSweep 1.6s ease-in-out infinite" }}
+            className="pointer-events-none absolute inset-x-4 h-px rounded-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
+            style={{
+              animation: "scanLineSweep 1.8s linear infinite",
+              top: 0,
+            }}
           />
         ) : null}
       </div>

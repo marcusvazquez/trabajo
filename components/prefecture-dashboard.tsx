@@ -117,6 +117,7 @@ export function PrefectureDashboard({
     }
   });
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyClosing, setHistoryClosing] = useState(false);
   const [recentScans, setRecentScans] = useState<RecentScan[]>([]);
   const skipNextWindowsSyncRef = useRef(true);
   /** Evita que un GET tardío de Supabase pise cambios ya hechos en el panel */
@@ -133,6 +134,14 @@ export function PrefectureDashboard({
       { id: createRecordId(), ...scan },
       ...previous,
     ].slice(0, MAX_RECENT_SCANS));
+  }, []);
+
+  const closeHistory = useCallback(() => {
+    setHistoryClosing(true);
+    setTimeout(() => {
+      setHistoryOpen(false);
+      setHistoryClosing(false);
+    }, 180);
   }, []);
 
   useEffect(() => {
@@ -262,137 +271,134 @@ export function PrefectureDashboard({
     []
   );
 
-  const handleScan = async (enrollmentRaw: string) => {
-    const { enrollment, alreadyExited } = resolveScanFromQr(enrollmentRaw);
-    const rawScanValue = enrollmentRaw.trim();
-    const credentialLabel = rawScanValue.slice(0, 160);
-    const credentialKey = credentialKeyFromScan(enrollment, credentialLabel);
-    const now = new Date();
-    const scannedAt = getCurrentHourLabel(now);
-    const student = await findStudentByScan(enrollment, rawScanValue);
+  const handleScan = useCallback(
+    async (enrollmentRaw: string) => {
+      const { enrollment, alreadyExited } = resolveScanFromQr(enrollmentRaw);
+      const rawScanValue = enrollmentRaw.trim();
+      const credentialLabel = rawScanValue.slice(0, 160);
+      const credentialKey = credentialKeyFromScan(enrollment, credentialLabel);
+      const now = new Date();
+      const scannedAt = getCurrentHourLabel(now);
+      const student = await findStudentByScan(enrollment, rawScanValue);
 
-    if (!student) {
-      const reason = "Matricula no registrada en el sistema.";
-      const deniedRecord: AccessRecord = {
-        id: createRecordId(),
-        scannedAt,
-        enrollment: credentialKey,
-        group: "—",
-        studentName: "No identificado",
-        result: "DENEGADO",
-        reason,
-      };
-      appendRecord(deniedRecord);
-      pushRecentScan({
-        student: null,
-        result: "DENEGADO",
-        reason,
-        scannedAt,
-        enrollmentLabel: credentialKey,
-        groupLabel: "—",
-      });
-      applyDenialTracking(
-        "DENEGADO",
-        credentialKey,
-        "No identificado",
-        scannedAt,
-        credentialLabel,
-        false
-      );
-      void fetch("/api/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          student: unknownScanStudentPlaceholder(credentialKey),
-          result: "DENEGADO" as const,
+      if (!student) {
+        const reason = "Matricula no registrada en el sistema.";
+        const deniedRecord: AccessRecord = {
+          id: createRecordId(),
           scannedAt,
+          enrollment: credentialKey,
+          group: "—",
+          studentName: "No identificado",
+          result: "DENEGADO",
           reason,
-        }),
-      }).catch(() => {});
-      return;
-    }
+        };
+        appendRecord(deniedRecord);
+        pushRecentScan({
+          student: null,
+          result: "DENEGADO",
+          reason,
+          scannedAt,
+          enrollmentLabel: credentialKey,
+          groupLabel: "—",
+        });
+        applyDenialTracking(
+          "DENEGADO",
+          credentialKey,
+          "No identificado",
+          scannedAt,
+          credentialLabel,
+          false
+        );
+        void fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            student: unknownScanStudentPlaceholder(credentialKey),
+            result: "DENEGADO" as const,
+            scannedAt,
+            reason,
+          }),
+        }).catch(() => {});
+        return;
+      }
 
-    if (alreadyExited) {
-      const reason =
-        "Registro temporal: el alumno ya tiene salida registrada (credencial vinculada en base de datos).";
-      const newRecord: AccessRecord = {
-        id: createRecordId(),
+      if (alreadyExited) {
+        const reason =
+          "Registro temporal: el alumno ya tiene salida registrada (credencial vinculada en base de datos).";
+        const newRecord: AccessRecord = {
+          id: createRecordId(),
+          scannedAt,
+          enrollment: student.enrollment,
+          group: student.gradeGroup || "—",
+          studentName: student.fullName,
+          result: "YA_SALIO",
+          reason,
+        };
+        appendRecord(newRecord);
+        pushRecentScan({
+          student,
+          result: "YA_SALIO",
+          reason,
+          scannedAt,
+          enrollmentLabel: student.enrollment,
+          groupLabel: student.gradeGroup || "—",
+        });
+        // YA_SALIO no resetea la racha de denegaciones: omitimos applyDenialTracking aquí.
+
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            student,
+            result: "YA_SALIO",
+            scannedAt,
+            reason,
+          }),
+        });
+        return;
+      }
+
+      const { result, reason } = validateExit(student, now, groupWindows);
+      const newRecord = withRecordId({
         scannedAt,
         enrollment: student.enrollment,
         group: student.gradeGroup || "—",
         studentName: student.fullName,
-        result: "YA_SALIO",
+        result,
         reason,
-      };
+      });
+
       appendRecord(newRecord);
       pushRecentScan({
         student,
-        result: "YA_SALIO",
+        result,
         reason,
         scannedAt,
         enrollmentLabel: student.enrollment,
         groupLabel: student.gradeGroup || "—",
       });
       applyDenialTracking(
-        "YA_SALIO",
+        result,
         student.enrollment,
         student.fullName,
         scannedAt,
         credentialLabel,
         true
       );
+
       await fetch("/api/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           student,
-          result: "YA_SALIO",
+          result,
           scannedAt,
           reason,
         }),
       });
-      return;
-    }
-
-    const { result, reason } = validateExit(student, now, groupWindows);
-    const newRecord = withRecordId({
-      scannedAt,
-      enrollment: student.enrollment,
-      group: student.gradeGroup || "—",
-      studentName: student.fullName,
-      result,
-      reason,
-    });
-
-    appendRecord(newRecord);
-    pushRecentScan({
-      student,
-      result,
-      reason,
-      scannedAt,
-      enrollmentLabel: student.enrollment,
-      groupLabel: student.gradeGroup || "—",
-    });
-    applyDenialTracking(
-      result,
-      student.enrollment,
-      student.fullName,
-      scannedAt,
-      credentialLabel,
-      true
-    );
-
-    await fetch("/api/notify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        student,
-        result,
-        scannedAt,
-        reason,
-      }),
-    });
-  };
+    },
+    [appendRecord, applyDenialTracking, groupWindows, pushRecentScan]
+  );
 
   return (
     <section className={`anim-fade-in space-y-5 ${skin.sectionMuted}`}>
@@ -470,7 +476,7 @@ export function PrefectureDashboard({
                   </div>
 
                   <div
-                    className={`mt-2 rounded-md p-2 text-xs font-semibold ${accessValidationBannerClasses(visualTheme, scan.result)}`}
+                    className={`anim-badge-pop mt-2 rounded-md p-2 text-xs font-semibold ${accessValidationBannerClasses(visualTheme, scan.result)}`}
                   >
                     <p className="flex items-center gap-2">
                       {scan.result === "DENEGADO" ? (
@@ -515,8 +521,16 @@ export function PrefectureDashboard({
         onOpenHistory={() => setHistoryOpen(true)}
       />
       {historyOpen ? (
-        <section className="anim-fade-in fixed inset-0 z-50 bg-slate-950/70 p-4 backdrop-blur-sm">
-          <div className="anim-scale-in mx-auto max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-xl border border-slate-600/50 bg-slate-900 shadow-2xl">
+        <section
+          className={`anim-fade-in fixed inset-0 z-50 bg-slate-950/70 p-4 backdrop-blur-sm ${
+            historyClosing ? "opacity-0 transition-opacity duration-[180ms]" : ""
+          }`}
+        >
+          <div
+            className={`anim-scale-in mx-auto max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-xl border border-slate-600/50 bg-slate-900 shadow-2xl ${
+              historyClosing ? "scale-95 opacity-0 transition-all duration-[180ms]" : ""
+            }`}
+          >
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 px-4 py-3">
               <h3 className="text-sm font-semibold text-slate-100">
                 Historial de salidas ({historyRecords.length})
@@ -547,7 +561,7 @@ export function PrefectureDashboard({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setHistoryOpen(false)}
+                  onClick={closeHistory}
                   className="anim-press rounded-md border border-slate-600 px-2 py-1 text-xs text-slate-200 hover:border-slate-400"
                 >
                   Cerrar

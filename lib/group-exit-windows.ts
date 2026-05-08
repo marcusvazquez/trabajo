@@ -75,7 +75,6 @@ export function isWithinGroupExitWindow(
     const start = minutesFromClock(w.startTime);
     const end = minutesFromClock(w.endTime);
     if (!Number.isFinite(start) || !Number.isFinite(end)) return false;
-    // Regla prefectura: si ya pasó la hora de salida también se permite.
-    return mins >= start;
+    return mins >= start && mins <= end;
   });
 }
