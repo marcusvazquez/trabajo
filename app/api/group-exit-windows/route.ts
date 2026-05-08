@@ -14,7 +14,7 @@ type GroupExitWindowRow = {
 function rowToWindow(row: GroupExitWindowRow): GroupExitWindow {
   return {
     id: row.id,
-    groupCode: row.group_code,
+    groupCode: row.group_code.trim().toUpperCase(),
     dayOfWeek: row.day_of_week,
     startTime: row.start_time.slice(0, 5),
     endTime: row.end_time.slice(0, 5),
@@ -23,12 +23,14 @@ function rowToWindow(row: GroupExitWindowRow): GroupExitWindow {
 }
 
 function windowToUpsertRow(window: GroupExitWindow) {
+  const startBase = window.startTime.slice(0, 5);
+  const endBase = window.endTime.slice(0, 5);
   return {
     id: window.id,
-    group_code: window.groupCode,
+    group_code: window.groupCode.trim().toUpperCase(),
     day_of_week: window.dayOfWeek,
-    start_time: `${window.startTime}:00`,
-    end_time: `${window.endTime}:00`,
+    start_time: `${startBase}:00`,
+    end_time: `${endBase}:00`,
     enabled: window.enabled,
   };
 }

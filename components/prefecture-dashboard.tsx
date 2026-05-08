@@ -119,7 +119,14 @@ export function PrefectureDashboard({
   const [historyOpen, setHistoryOpen] = useState(false);
   const [recentScans, setRecentScans] = useState<RecentScan[]>([]);
   const skipNextWindowsSyncRef = useRef(true);
+  /** Evita que un GET tardío de Supabase pise cambios ya hechos en el panel */
+  const userAdjustedGroupWindowsRef = useRef(false);
   const windowsSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleGroupWindowsChange = useCallback((next: GroupExitWindow[]) => {
+    userAdjustedGroupWindowsRef.current = true;
+    setGroupWindows(next);
+  }, []);
 
   const pushRecentScan = useCallback((scan: Omit<RecentScan, "id">) => {
     setRecentScans((previous) => [
@@ -143,7 +150,12 @@ export function PrefectureDashboard({
         const response = await fetch("/api/group-exit-windows", { cache: "no-store" });
         if (!response.ok) return;
         const payload = (await response.json()) as { windows?: GroupExitWindow[] };
-        if (!cancelled && Array.isArray(payload.windows) && payload.windows.length > 0) {
+        if (
+          !cancelled &&
+          !userAdjustedGroupWindowsRef.current &&
+          Array.isArray(payload.windows) &&
+          payload.windows.length > 0
+        ) {
           skipNextWindowsSyncRef.current = true;
           setGroupWindows(payload.windows);
         }
@@ -492,7 +504,7 @@ export function PrefectureDashboard({
 
       <GroupExitAuthorizationPanel
         windows={groupWindows}
-        onChange={setGroupWindows}
+        onChange={handleGroupWindowsChange}
         visualTheme={visualTheme}
       />
 
