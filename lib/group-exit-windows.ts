@@ -31,6 +31,57 @@ export function minutesFromClock(hhmm: string): number {
   return h * 60 + m;
 }
 
+/** Rango permitido el mismo día civil (evita cruces tipo 16:00→04:00 o madrugada). */
+const PRESENCE_DAY_MIN = 6 * 60;
+const PRESENCE_DAY_MAX = 23 * 60 + 59;
+const MIN_PRESENCE_GAP_MINUTES = 15;
+
+function clampMinutesToPresenceBand(m: number): number {
+  return Math.min(PRESENCE_DAY_MAX, Math.max(PRESENCE_DAY_MIN, m));
+}
+
+/** Formato HH:MM para inputs type="time". */
+export function formatClockMinutes(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+/**
+ * Ajusta DESDE/HASTA: ambas entre 06:00 y 23:59, DESDE antes que HASTA y al menos 15 minutos de diferencia.
+ * Rechaza intervalos “nocturnos” o invertidos (ej. salida a las 04:00 o fin antes que inicio).
+ */
+export function sanitizePresenceTimePair(
+  startTime: string,
+  endTime: string
+): { startTime: string; endTime: string } {
+  let s = minutesFromClock(startTime.slice(0, 5));
+  let e = minutesFromClock(endTime.slice(0, 5));
+  if (!Number.isFinite(s)) s = PRESENCE_DAY_MIN;
+  if (!Number.isFinite(e)) e = Math.min(PRESENCE_DAY_MAX, PRESENCE_DAY_MIN + MIN_PRESENCE_GAP_MINUTES);
+
+  s = clampMinutesToPresenceBand(s);
+  e = clampMinutesToPresenceBand(e);
+
+  const maxStart = PRESENCE_DAY_MAX - MIN_PRESENCE_GAP_MINUTES;
+  if (s > maxStart) {
+    s = maxStart;
+  }
+
+  if (e <= s) {
+    e = Math.min(PRESENCE_DAY_MAX, s + MIN_PRESENCE_GAP_MINUTES);
+  }
+
+  if (e > PRESENCE_DAY_MAX) {
+    e = PRESENCE_DAY_MAX;
+  }
+  if (s >= e) {
+    s = Math.max(PRESENCE_DAY_MIN, e - MIN_PRESENCE_GAP_MINUTES);
+  }
+
+  return { startTime: formatClockMinutes(s), endTime: formatClockMinutes(e) };
+}
+
 const WEEKDAY_TO_INDEX: Record<string, number> = {
   Sun: 0,
   Mon: 1,

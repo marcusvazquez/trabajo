@@ -10,6 +10,9 @@ import type { AppVisualTheme } from "@/lib/app-visual-theme";
 const INSTITUTIONAL_SUFFIX = "@cecytebc.edu.mx";
 const VALID_EMAIL_REGEX = /^[^\s@]+@cecytebc\.edu\.mx$/i;
 const MIN_PASSWORD_LENGTH = 4;
+/** RFC práctico / límites del campo */
+const MAX_EMAIL_LENGTH = 254;
+const MAX_PASSWORD_LENGTH = 128;
 
 type LoginScreenProps = {
   onLogin: () => void;
@@ -96,11 +99,12 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
           type="email"
           autoComplete="username"
           value={email}
+          maxLength={MAX_EMAIL_LENGTH}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setEmail(e.target.value.slice(0, MAX_EMAIL_LENGTH));
           }}
           placeholder={`usuario${INSTITUTIONAL_SUFFIX}`}
-          className={`w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:ring-2 ${skin.ring}`}
+          className={`min-w-0 max-w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:ring-2 ${skin.ring}`}
         />
 
         <label className="block text-xs font-medium tracking-[0.2em] text-slate-300">CONTRASEÑA</label>
@@ -108,11 +112,13 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
           type="password"
           autoComplete="current-password"
           value={password}
+          maxLength={MAX_PASSWORD_LENGTH}
+          minLength={MIN_PASSWORD_LENGTH}
           onChange={(e) => {
-            setPassword(e.target.value);
+            setPassword(e.target.value.slice(0, MAX_PASSWORD_LENGTH));
           }}
           placeholder="Mínimo 4 caracteres"
-          className={`w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none focus:ring-2 ${skin.ring}`}
+          className={`min-w-0 max-w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none focus:ring-2 ${skin.ring}`}
         />
 
         {errorMessage ? (

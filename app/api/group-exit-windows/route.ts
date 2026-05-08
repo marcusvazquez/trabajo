@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { GroupExitWindow } from "@/lib/types";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { sanitizePresenceTimePair } from "@/lib/group-exit-windows";
 
 type GroupExitWindowRow = {
   id: string;
@@ -12,19 +13,24 @@ type GroupExitWindowRow = {
 };
 
 function rowToWindow(row: GroupExitWindowRow): GroupExitWindow {
+  const { startTime, endTime } = sanitizePresenceTimePair(
+    row.start_time.slice(0, 5),
+    row.end_time.slice(0, 5)
+  );
   return {
     id: row.id,
     groupCode: row.group_code.trim().toUpperCase(),
     dayOfWeek: row.day_of_week,
-    startTime: row.start_time.slice(0, 5),
-    endTime: row.end_time.slice(0, 5),
+    startTime,
+    endTime,
     enabled: row.enabled,
   };
 }
 
 function windowToUpsertRow(window: GroupExitWindow) {
-  const startBase = window.startTime.slice(0, 5);
-  const endBase = window.endTime.slice(0, 5);
+  const { startTime, endTime } = sanitizePresenceTimePair(window.startTime, window.endTime);
+  const startBase = startTime.slice(0, 5);
+  const endBase = endTime.slice(0, 5);
   return {
     id: window.id,
     group_code: window.groupCode.trim().toUpperCase(),

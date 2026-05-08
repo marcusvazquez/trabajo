@@ -3,6 +3,7 @@
 import { CalendarClock, Users } from "lucide-react";
 import { groupAuthPanelSkin } from "@/lib/app-visual-theme";
 import type { AppVisualTheme } from "@/lib/app-visual-theme";
+import { sanitizePresenceTimePair } from "@/lib/group-exit-windows";
 import type { GroupExitWindow } from "@/lib/types";
 
 const WEEKDAYS = [
@@ -29,7 +30,14 @@ export function GroupExitAuthorizationPanel({
   const skin = groupAuthPanelSkin(visualTheme);
 
   const patch = (id: string, partial: Partial<GroupExitWindow>) => {
-    onChange(windows.map((w) => (w.id === id ? { ...w, ...partial } : w)));
+    onChange(
+      windows.map((w) => {
+        if (w.id !== id) return w;
+        const next = { ...w, ...partial };
+        const fixed = sanitizePresenceTimePair(next.startTime, next.endTime);
+        return { ...next, ...fixed };
+      })
+    );
   };
 
   return (
@@ -47,7 +55,9 @@ export function GroupExitAuthorizationPanel({
             Si cambias horario o día aquí, se aplica de inmediato al escanear (hora Tijuana).
           </p>
           <p className={`mt-1 text-xs ${skin.sub}`}>
-            Zona horaria aplicada: hora de verano del Pacífico (Tijuana, B.C. GMT-7).
+            Zona horaria aplicada: hora de verano del Pacífico (Tijuana, B.C. GMT-7). Solo se permiten
+            horas entre 06:00 y 23:59 el mismo día; DESDE debe quedar antes que HASTA (mínimo 15 minutos
+            de diferencia). No se admiten franjas invertidas ni tipo madrugada (ej. 16:00 a 04:00).
           </p>
         </div>
       </div>
