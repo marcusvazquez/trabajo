@@ -21,14 +21,14 @@ export function PrefectureRepeatedExitAlertPanel({
 }: PrefectureRepeatedExitAlertPanelProps) {
   const skin = prefectureExitAlertPanelSkin(visualTheme);
 
-  const pulseGlowVar: CSSProperties = {
+  const pulseGlowVar = {
     "--pulse-glow-color":
       visualTheme === "security"
         ? "rgba(56, 189, 248, 0.2)"
         : visualTheme === "lince"
           ? "rgba(245, 200, 58, 0.18)"
           : "rgba(244, 63, 94, 0.15)",
-  };
+  } as CSSProperties;
 
   useEffect(() => {
     if (alerts.length === 0) return;
