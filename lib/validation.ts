@@ -4,6 +4,7 @@ import {
   minutesFromClock,
   TIJUANA_TIME_ZONE,
 } from "@/lib/group-exit-windows";
+import { isDemoGroupCode, studentMatchesGroupCode } from "@/lib/student-group";
 
 const EXIT_TOLERANCE_MINUTES = 20;
 
@@ -121,8 +122,16 @@ export function validateExit(
   };
 }
 
-/** El alumno pertenece al grupo indicado (comparación flexible). */
+/**
+ * El alumno pertenece al código de ventana del panel.
+ * Para 4DPGM/4CPGM usa la misma regla que la credencial (ej. grupo "DPGM" o "4TO | DPGM").
+ * Otros códigos: subcadena sobre texto de grupo combinado.
+ */
 function studentBelongsToGroup(student: Student, groupCode: string): boolean {
+  const code = groupCode.trim().toUpperCase();
+  if (isDemoGroupCode(code)) {
+    return studentMatchesGroupCode(student, code);
+  }
   const combined = `${student.semesterGroup ?? ""} ${student.gradeGroup ?? ""}`.toUpperCase();
-  return combined.replace(/\s+/g, "").includes(groupCode.replace(/\s+/g, ""));
+  return combined.replace(/\s+/g, "").includes(code.replace(/\s+/g, ""));
 }
