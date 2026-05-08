@@ -32,7 +32,7 @@ const WEEKDAY_LABELS = [
   "Sabado",
 ];
 
-/** Grupos que solo pueden salir por ventana configurada en el panel (no por allowedExitTimes ficticio). */
+/** Grupos que solo pueden salir según reglas del panel (no por allowedExitTimes salvo excepciones). */
 const EXIT_PANEL_ONLY_GROUP_CODES = ["4DPGM", "4CPGM"] as const;
 
 export function validateExit(
@@ -53,20 +53,59 @@ export function validateExit(
     )
   );
 
+  /**
+   * DESDE–HASTA = tiempo en que deben permanecer en plantel (clases).
+   * Dentro del intervalo → salida denegada.
+   * Antes de DESDE o después de HASTA → salida autorizada (p. ej. al terminar la jornada).
+   */
   for (const code of allGroupCodes) {
     if (!studentBelongsToGroup(student, code)) continue;
-    const activeWindow = groupWindows.find((w) => {
-      if (!w.enabled || w.groupCode.trim().toUpperCase() !== code) return false;
-      if (w.dayOfWeek !== currentDow) return false;
-      const start = minutesFromClock(w.startTime);
-      const end = minutesFromClock(w.endTime);
-      if (!Number.isFinite(start) || !Number.isFinite(end)) return false;
-      return currentMinutes >= start && currentMinutes <= end;
-    });
-    if (activeWindow) {
+
+    const windowToday = groupWindows.find(
+      (w) =>
+        w.enabled &&
+        w.groupCode.trim().toUpperCase() === code &&
+        w.dayOfWeek === currentDow
+    );
+
+    if (!windowToday) continue;
+
+    const start = minutesFromClock(windowToday.startTime);
+    const end = minutesFromClock(windowToday.endTime);
+    if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
+
+    const insideMandatoryPresence = currentMinutes >= start && currentMinutes <= end;
+
+    if (insideMandatoryPresence) {
       return {
-        result: "AUTORIZADO",
-        reason: `Salida autorizada: ventana de grupo ${code} activa (${activeWindow.startTime}–${activeWindow.endTime}).`,
+        result: "DENEGADO",
+        reason: `Salida no autorizada: permanencia obligatoria en plantel entre ${windowToday.startTime} y ${windowToday.endTime} (hora Tijuana, GMT-7). Grupo ${code}.`,
+      };
+    }
+
+    if (currentMinutes < start) {
+      return {
+        result: "DENEGADO",
+        reason: `Salida no autorizada: aún no inicia el horario de permanencia (${windowToday.startTime}–${windowToday.endTime}, hora Tijuana). Grupo ${code}.`,
+      };
+    }
+
+    return {
+      result: "AUTORIZADO",
+      reason: `Salida autorizada: horario de permanencia finalizado (${windowToday.startTime}–${windowToday.endTime}). Grupo ${code}.`,
+    };
+  }
+
+  for (const code of allGroupCodes) {
+    if (!studentBelongsToGroup(student, code)) continue;
+
+    const anyWindow = groupWindows.find(
+      (w) => w.enabled && w.groupCode.trim().toUpperCase() === code
+    );
+    if (anyWindow) {
+      return {
+        result: "DENEGADO",
+        reason: `Hoy (${WEEKDAY_LABELS[currentDow]}) no hay horario de permanencia configurado para el grupo ${code}. Elige el día correcto en el panel.`,
       };
     }
   }
@@ -89,44 +128,12 @@ export function validateExit(
     };
   }
 
-  for (const code of allGroupCodes) {
-    if (!studentBelongsToGroup(student, code)) continue;
-
-    const windowToday = groupWindows.find(
-      (w) =>
-        w.enabled &&
-        w.groupCode.trim().toUpperCase() === code &&
-        w.dayOfWeek === currentDow
-    );
-    if (windowToday) {
-      return {
-        result: "DENEGADO",
-        reason: `Fuera de horario para ${code} (hora Tijuana, GMT-7). Ventana hoy: ${windowToday.startTime}–${windowToday.endTime}.`,
-      };
-    }
-
-    const anyWindow = groupWindows.find(
-      (w) => w.enabled && w.groupCode.trim().toUpperCase() === code
-    );
-    if (anyWindow) {
-      return {
-        result: "DENEGADO",
-        reason: `Hoy (${WEEKDAY_LABELS[currentDow]}) no está autorizado para el grupo ${code}.`,
-      };
-    }
-  }
-
   return {
     result: "DENEGADO",
     reason: "No existe permiso de salida para este horario.",
   };
 }
 
-/**
- * El alumno pertenece al código de ventana del panel.
- * Para 4DPGM/4CPGM usa la misma regla que la credencial (ej. grupo "DPGM" o "4TO | DPGM").
- * Otros códigos: subcadena sobre texto de grupo combinado.
- */
 function studentBelongsToGroup(student: Student, groupCode: string): boolean {
   const code = groupCode.trim().toUpperCase();
   if (isDemoGroupCode(code)) {

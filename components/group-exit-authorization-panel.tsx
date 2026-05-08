@@ -39,10 +39,12 @@ export function GroupExitAuthorizationPanel({
           <Users className="h-6 w-6" />
         </div>
         <div>
-          <h3 className={`text-lg font-semibold ${skin.heading}`}>Autorización por grupo</h3>
+          <h3 className={`text-lg font-semibold ${skin.heading}`}>Horario de permanencia por grupo</h3>
           <p className={`text-sm ${skin.sub}`}>
-            Define el día y el intervalo horario en que la salida queda autorizada para 4DPGM y 4CPGM
-            (además de los horarios individuales del alumno).
+            DESDE y HASTA indican cuándo el alumno debe permanecer en el plantel (clases). Durante ese
+            intervalo la salida se deniega; antes de DESDE también se deniega. Solo después de HASTA la
+            salida puede autorizarse (si cambias horario en el panel, se refleja al instante en escaneos).
+            Si cambias horario o día aquí, se aplica de inmediato al escanear (hora Tijuana).
           </p>
           <p className={`mt-1 text-xs ${skin.sub}`}>
             Zona horaria aplicada: hora de verano del Pacífico (Tijuana, B.C. GMT-7).
@@ -87,7 +89,7 @@ export function GroupExitAuthorizationPanel({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className={skin.label}>DESDE</span>
+                <span className={skin.label}>DESDE (inicio permanencia)</span>
                 <input
                   type="time"
                   value={w.startTime}
@@ -97,7 +99,7 @@ export function GroupExitAuthorizationPanel({
                 />
               </div>
               <div>
-                <span className={skin.label}>HASTA</span>
+                <span className={skin.label}>HASTA (fin permanencia)</span>
                 <input
                   type="time"
                   value={w.endTime}

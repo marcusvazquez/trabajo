@@ -61,7 +61,10 @@ export function getTijuanaClockContext(now: Date): { dayOfWeek: number; minutes:
   return { dayOfWeek, minutes };
 }
 
-/** Comprueba si `now` cae en alguna ventana habilitada para ese código de grupo. */
+/**
+ * True si `now` está dentro del intervalo DESDE–HASTA (permanencia obligatoria en plantel)
+ * para ese código de grupo.
+ */
 export function isWithinGroupExitWindow(
   groupCode: DemoGroupCode,
   windows: GroupExitWindow[],
