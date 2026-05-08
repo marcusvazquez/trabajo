@@ -1,6 +1,10 @@
 /**
  * Base temporal: enlaza credenciales oficiales (URL del QR CECYTE) con matrícula
  * y estado de salida. Sustituir o sincronizar con BD real cuando exista.
+ *
+ * Si dos alumnos comparten el mismo path de credencial o URL duplicada en BD,
+ * `alreadyExited` solo debe aplicarse cuando la matrícula identificada coincide
+ * con `enrollment` de este registro (véase `resolveAlreadyExitedForStudent`).
  */
 export type TemporaryCredentialExit = {
   /** URL exacta del QR (como la devuelve el lector). */

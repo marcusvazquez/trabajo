@@ -16,7 +16,7 @@ import {
 } from "@/lib/repeated-exit-denials";
 import { STUDENTS } from "@/lib/mock-data";
 import { credentialKeyFromScan } from "@/lib/credential-key";
-import { resolveScanFromQr } from "@/lib/resolve-scan";
+import { resolveAlreadyExitedForStudent, resolveScanFromQr } from "@/lib/resolve-scan";
 import { INITIAL_GROUP_EXIT_WINDOWS } from "@/lib/group-exit-windows";
 import { accessValidationBannerClasses, dashboardSkin } from "@/lib/app-visual-theme";
 import type { AppVisualTheme } from "@/lib/app-visual-theme";
@@ -273,7 +273,7 @@ export function PrefectureDashboard({
 
   const handleScan = useCallback(
     async (enrollmentRaw: string) => {
-      const { enrollment, alreadyExited } = resolveScanFromQr(enrollmentRaw);
+      const { enrollment, alreadyExited: preliminaryAlreadyExited } = resolveScanFromQr(enrollmentRaw);
       const rawScanValue = enrollmentRaw.trim();
       const credentialLabel = rawScanValue.slice(0, 160);
       const credentialKey = credentialKeyFromScan(enrollment, credentialLabel);
@@ -321,6 +321,12 @@ export function PrefectureDashboard({
         }).catch(() => {});
         return;
       }
+
+      const alreadyExited = resolveAlreadyExitedForStudent(
+        rawScanValue,
+        student,
+        preliminaryAlreadyExited
+      );
 
       if (alreadyExited) {
         const reason =
