@@ -42,6 +42,25 @@ type ScanState = {
   reason: string;
 };
 
+async function findStudentByScan(enrollment: string, credentialLabel: string): Promise<Student | null> {
+  try {
+    const response = await fetch("/api/students/lookup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        enrollment,
+        qrPayload: credentialLabel,
+      }),
+    });
+    if (!response.ok) return null;
+    const payload = (await response.json()) as { student?: Student | null };
+    if (payload.student) return payload.student;
+  } catch {
+    // Si Supabase no está disponible, la app usa fallback local.
+  }
+  return STUDENTS.find((candidate) => candidate.enrollment === enrollment) ?? null;
+}
+
 function unknownScanStudentPlaceholder(credentialKey: string): Student {
   return {
     id: "scan-unknown",
@@ -134,11 +153,12 @@ export function PrefectureDashboard({
 
   const handleScan = async (enrollmentRaw: string) => {
     const { enrollment, alreadyExited } = resolveScanFromQr(enrollmentRaw);
-    const credentialLabel = enrollmentRaw.trim().slice(0, 160);
+    const rawScanValue = enrollmentRaw.trim();
+    const credentialLabel = rawScanValue.slice(0, 160);
     const credentialKey = credentialKeyFromScan(enrollment, credentialLabel);
     const now = new Date();
     const scannedAt = getCurrentHourLabel(now);
-    const student = STUDENTS.find((candidate) => candidate.enrollment === enrollment);
+    const student = await findStudentByScan(enrollment, rawScanValue);
 
     if (!student) {
       const reason = "Matricula no registrada en el sistema.";

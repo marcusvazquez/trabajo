@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { formatExitAttemptWhatsAppMessage } from "@/lib/format-exit-whatsapp-message";
 import { hasMailerConfig, sendGuardianNotification } from "@/lib/mailer";
-import { sendExitAttemptWhatsApp } from "@/lib/send-prefecture-whatsapp";
 import type { NotificationPayload } from "@/lib/types";
+import { sendWhatsAppNotification } from "@/lib/whatsapp";
 
 export async function POST(request: Request) {
   try {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const whatsappBody = formatExitAttemptWhatsAppMessage(payload);
-    const wa = await sendExitAttemptWhatsApp(whatsappBody);
+    const wa = await sendWhatsAppNotification(whatsappBody);
 
     let email: "skipped" | "sent" | "error" = "skipped";
     if (hasMailerConfig() && payload.student.guardianEmail) {
