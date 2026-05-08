@@ -31,6 +31,9 @@ const WEEKDAY_LABELS = [
   "Sabado",
 ];
 
+/** Grupos que solo pueden salir por ventana configurada en el panel (no por allowedExitTimes ficticio). */
+const EXIT_PANEL_ONLY_GROUP_CODES = ["4DPGM", "4CPGM"] as const;
+
 export function validateExit(
   student: Student,
   now: Date,
@@ -67,10 +70,16 @@ export function validateExit(
     }
   }
 
-  const isAllowedNow = student.allowedExitTimes.some((exitTime) => {
-    const exitMinutes = toMinutes(exitTime);
-    return Math.abs(exitMinutes - currentMinutes) <= EXIT_TOLERANCE_MINUTES;
-  });
+  const exitOnlyViaConfiguredWindows = EXIT_PANEL_ONLY_GROUP_CODES.some((code) =>
+    studentBelongsToGroup(student, code)
+  );
+
+  const isAllowedNow =
+    !exitOnlyViaConfiguredWindows &&
+    student.allowedExitTimes.some((exitTime) => {
+      const exitMinutes = toMinutes(exitTime);
+      return Math.abs(exitMinutes - currentMinutes) <= EXIT_TOLERANCE_MINUTES;
+    });
 
   if (isAllowedNow) {
     return {

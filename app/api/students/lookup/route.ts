@@ -51,7 +51,8 @@ function mapStudentRowToStudent(row: StudentRow): Student {
     credentialQrPayload: row.qr_payload,
     photoUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0A2A66&color=fff&size=256`,
     guardianEmail: "",
-    allowedExitTimes: ["14:00"],
+    /** Vacío: la salida se gobierna por ventanas de grupo en prefectura (tabla group_exit_windows). */
+    allowedExitTimes: [],
     absences: 0,
   };
 }
