@@ -8,17 +8,17 @@ export const INITIAL_GROUP_EXIT_WINDOWS: GroupExitWindow[] = [
   {
     id: "11111111-1111-1111-1111-1111111111aa",
     groupCode: "4DPGM",
-    dayOfWeek: 1,
-    startTime: "16:00",
-    endTime: "19:30",
+    dayOfWeek: 5,
+    startTime: "13:30",
+    endTime: "19:40",
     enabled: true,
   },
   {
     id: "22222222-2222-2222-2222-2222222222bb",
     groupCode: "4CPGM",
-    dayOfWeek: 3,
-    startTime: "16:00",
-    endTime: "19:30",
+    dayOfWeek: 5,
+    startTime: "13:30",
+    endTime: "19:40",
     enabled: true,
   },
 ];

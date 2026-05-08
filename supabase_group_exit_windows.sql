@@ -32,6 +32,6 @@ with check (true);
 
 insert into public.group_exit_windows (id, group_code, day_of_week, start_time, end_time, enabled)
 values
-  ('11111111-1111-1111-1111-1111111111aa', '4DPGM', 1, '16:00', '19:30', true),
-  ('22222222-2222-2222-2222-2222222222bb', '4CPGM', 3, '16:00', '19:30', true)
+  ('11111111-1111-1111-1111-1111111111aa', '4DPGM', 5, '13:30', '19:40', true),
+  ('22222222-2222-2222-2222-2222222222bb', '4CPGM', 5, '13:30', '19:40', true)
 on conflict (id) do nothing;
