@@ -12,7 +12,7 @@ const VALID_EMAIL_REGEX = /^[^\s@]+@cecytebc\.edu\.mx$/i;
 const MIN_PASSWORD_LENGTH = 4;
 /** RFC práctico / límites del campo */
 const MAX_EMAIL_LENGTH = 254;
-const MAX_PASSWORD_LENGTH = 128;
+const MAX_PASSWORD_LENGTH = 30;
 
 type LoginScreenProps = {
   onLogin: () => void;
@@ -68,7 +68,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
 
   return (
     <section
-      className={`anim-scale-in relative mx-auto mt-8 w-full max-w-xl rounded-3xl p-8 text-white backdrop-blur ${skin.section}`}
+      className={`anim-scale-in relative mx-auto mt-8 w-full max-w-6xl rounded-3xl p-8 text-white backdrop-blur ${skin.section}`}
     >
       <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
         <AppThemePicker
@@ -88,7 +88,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
         </p>
       </div>
 
-      <form className="anim-slide-up anim-delay-200 space-y-4" onSubmit={handleEnter}>
+      <form className="anim-slide-up anim-delay-200 w-full space-y-4" onSubmit={handleEnter}>
         <h2 className={`py-2 text-center text-2xl tracking-[0.15em] ${skin.title}`}>
           INICIAR SESION
         </h2>
@@ -104,7 +104,7 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
             setEmail(e.target.value.slice(0, MAX_EMAIL_LENGTH));
           }}
           placeholder={`usuario${INSTITUTIONAL_SUFFIX}`}
-          className={`min-w-0 max-w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:ring-2 ${skin.ring}`}
+          className={`w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:ring-2 ${skin.ring}`}
         />
 
         <label className="block text-xs font-medium tracking-[0.2em] text-slate-300">CONTRASEÑA</label>
@@ -117,8 +117,8 @@ export function LoginScreen({ onLogin, visualTheme, onVisualThemeChange }: Login
           onChange={(e) => {
             setPassword(e.target.value.slice(0, MAX_PASSWORD_LENGTH));
           }}
-          placeholder="Mínimo 4 caracteres"
-          className={`min-w-0 max-w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none focus:ring-2 ${skin.ring}`}
+          placeholder="De 4 a 30 caracteres"
+          className={`w-full rounded-xl border border-[#2b4693] bg-[#041239] px-4 py-3 text-white outline-none focus:ring-2 ${skin.ring}`}
         />
 
         {errorMessage ? (
