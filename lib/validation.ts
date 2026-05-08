@@ -1,5 +1,9 @@
 import type { GroupExitWindow, Student, ValidationResult } from "@/lib/types";
-import { isWithinGroupExitWindow } from "@/lib/group-exit-windows";
+import {
+  getTijuanaClockContext,
+  isWithinGroupExitWindow,
+  TIJUANA_TIME_ZONE,
+} from "@/lib/group-exit-windows";
 import { studentMatchesGroupCode } from "@/lib/student-group";
 
 const EXIT_TOLERANCE_MINUTES = 20;
@@ -11,6 +15,7 @@ function toMinutes(timeText: string): number {
 
 export function getCurrentHourLabel(date: Date): string {
   return date.toLocaleTimeString("es-MX", {
+    timeZone: TIJUANA_TIME_ZONE,
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -39,8 +44,7 @@ export function validateExit(
   result: ValidationResult;
   reason: string;
 } {
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const currentDow = now.getDay();
+  const { minutes: currentMinutes, dayOfWeek: currentDow } = getTijuanaClockContext(now);
 
   const demoCodes = ["4DPGM", "4CPGM"] as const;
 
@@ -78,7 +82,7 @@ export function validateExit(
     if (matchingWindow) {
       return {
         result: "DENEGADO",
-        reason: `Fuera de horario para ${code}. Ventana hoy: ${matchingWindow.startTime}-${matchingWindow.endTime}.`,
+        reason: `Fuera de horario para ${code} (hora Tijuana, GMT-7). Ventana hoy: ${matchingWindow.startTime}-${matchingWindow.endTime}.`,
       };
     }
 

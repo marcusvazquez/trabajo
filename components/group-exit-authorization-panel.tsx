@@ -44,6 +44,9 @@ export function GroupExitAuthorizationPanel({
             Define el día y el intervalo horario en que la salida queda autorizada para 4DPGM y 4CPGM
             (además de los horarios individuales del alumno).
           </p>
+          <p className={`mt-1 text-xs ${skin.sub}`}>
+            Zona horaria aplicada: hora de verano del Pacífico (Tijuana, B.C. GMT-7).
+          </p>
         </div>
       </div>
 
