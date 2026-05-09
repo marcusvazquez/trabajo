@@ -2,32 +2,28 @@
 
 Sistema de control de acceso para CECYTE BC Villa del Sol.
 
-### Variables de entorno
+### Variables de entorno (local)
 
-Crea un archivo `.env.local` con base en `.env.example`:
+Crea un archivo `.env.local` con base en `.env.example` y completa los valores:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Llena al menos:
+Variables clave para iniciar sesión en prefectura:
 
-- `EMAIL_USER`
-- `EMAIL_PASS`
-- `MONGODB_URI`
-- `MONGODB_DB_NAME`
+- `PREFECTURE_LOGIN_EMAIL`
+- `PREFECTURE_LOGIN_PASSWORD`
 
-### Probar conexion MongoDB
+Variables clave para Supabase:
 
-Con el proyecto corriendo (`npm run dev`), visita:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
-- [http://localhost:3000/api/db-test](http://localhost:3000/api/db-test)
+Variables de WhatsApp (si se usan alertas por WhatsApp):
 
-Si todo esta bien, responde:
-
-```json
-{ "ok": true, "message": "Conexion exitosa con MongoDB" }
-```
+- `WHATSAPP_PHONE`
+- `WHATSAPP_APIKEY`
 
 ## Getting Started
 
@@ -60,6 +56,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`.env.local` **no se sube a GitHub** y **Vercel no lo lee automáticamente**.
+Debes configurar las variables en el panel de Vercel:
+
+1. Entra a tu proyecto en Vercel.
+2. Ve a **Settings → Environment Variables**.
+3. Agrega (mínimo):
+   - `PREFECTURE_LOGIN_EMAIL`
+   - `PREFECTURE_LOGIN_PASSWORD`
+4. (Recomendado también):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+   - `WHATSAPP_PHONE`
+   - `WHATSAPP_APIKEY`
+5. Guarda y haz **Redeploy**.
+
+Si no defines `PREFECTURE_LOGIN_EMAIL` y `PREFECTURE_LOGIN_PASSWORD`, aparecerá el mensaje:
+`Credenciales de prefectura no configuradas...`.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
